@@ -12,7 +12,6 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
@@ -21,6 +20,7 @@ public class MainActivity extends Activity {
     WifiScanReceiver wifiReciever;
     ListView list;
     String wifis[];
+    int[] channels = {0, 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2482}; 
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +53,17 @@ public class MainActivity extends Activity {
     
     class WifiScanReceiver extends BroadcastReceiver {
         public void onReceive(Context c, Intent intent) {
+            
            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
-           wifis = new String[wifiScanList.size()];
-           for(int i = 0; i < wifiScanList.size(); i++){
-              wifis[i] = (wifiScanList.get(i)).SSID + ": level = " + (wifiScanList.get(i)).level 
-                      + ", BSSID = " + (wifiScanList.get(i)).BSSID + ", frequency = " + (wifiScanList.get(i)).frequency;
-           }
-
-           list.setAdapter(new ArrayAdapter<String>(getApplicationContext(),
-           android.R.layout.simple_list_item_1,wifis));
+           
+//           wifis = new String[wifiScanList.size()];
+//           for(int i = 0; i < wifiScanList.size(); i++){
+//              wifis[i] = (wifiScanList.get(i)).SSID + ": level = " + (wifiScanList.get(i)).level 
+//                      + ", BSSID = " + (wifiScanList.get(i)).BSSID + ", frequency = " + (wifiScanList.get(i)).frequency;
+//           }
+//
+           list.setAdapter(new InfoAdapter(getBaseContext(), wifiScanList));
+        
         }
      }
 
