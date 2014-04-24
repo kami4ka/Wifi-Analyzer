@@ -3,6 +3,8 @@ package com.kami.wificharts;
 
 import java.util.List;
 
+import com.androidplot.xy.XYPlot;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -16,17 +18,22 @@ import android.widget.ListView;
 
 public class MainActivity extends Activity {
     
+    private XYPlot mySimpleXYPlot;
+    
     WifiManager mainWifiObj;
     WifiScanReceiver wifiReciever;
     ListView list;
     String wifis[];
-    int[] channels = {0, 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2482}; 
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list = (ListView)findViewById(R.id.listView1);
+        
+        // initialize our XYPlot reference:
+        mySimpleXYPlot = (XYPlot) findViewById(R.id.signalStrength);
+        
         mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         wifiReciever = new WifiScanReceiver();
         mainWifiObj.startScan();
@@ -62,7 +69,7 @@ public class MainActivity extends Activity {
 //                      + ", BSSID = " + (wifiScanList.get(i)).BSSID + ", frequency = " + (wifiScanList.get(i)).frequency;
 //           }
 //
-           list.setAdapter(new InfoAdapter(getBaseContext(), wifiScanList));
+           list.setAdapter(new InfoAdapter(getApplicationContext(), wifiScanList));
         
         }
      }

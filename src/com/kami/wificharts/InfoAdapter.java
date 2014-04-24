@@ -1,5 +1,6 @@
 package com.kami.wificharts;
 
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
@@ -15,6 +16,7 @@ public class InfoAdapter extends BaseAdapter {
     Context ctx;
     LayoutInflater lInflater;
     List<ScanResult> results;
+    Integer[] channels = {0, 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2482}; 
     
     InfoAdapter(Context context, List<ScanResult> objects) {
         ctx = context;
@@ -47,9 +49,14 @@ public class InfoAdapter extends BaseAdapter {
         }
         
         ScanResult mResult = (ScanResult) getItem(position);
+        
+        int channel = Arrays.asList(channels).indexOf(mResult.frequency);
 
-        ((TextView) mView.findViewById(R.id.ssid)).setText(mResult.SSID);
-
+        ((TextView) mView.findViewById(R.id.ssid)).setText(String.valueOf(mResult.SSID));
+        ((TextView) mView.findViewById(R.id.info)).setText("Канал: " + channel);
+        ((TextView) mView.findViewById(R.id.bssid)).setText(String.valueOf(mResult.BSSID));
+        ((TextView) mView.findViewById(R.id.signal)).setText("Рівень: " + mResult.level + "dB");
+        
         return mView;
     }
 

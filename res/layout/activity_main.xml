@@ -9,14 +9,27 @@
    tools:context=".MainActivity" >
 
    <ListView
-      android:id="@+id/listView1"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignParentTop="true"
-      android:layout_centerHorizontal="true"
-      android:drawSelectorOnTop="false"
-      android:background="@android:color/background_dark"
-      android:listSelector="@android:color/darker_gray" >
-
+       android:id="@+id/listView1"
+       android:layout_width="match_parent"
+       android:layout_height="150dp"
+       android:layout_alignParentTop="true"
+       android:layout_centerHorizontal="true"
+       android:background="@android:color/background_dark"
+       android:drawSelectorOnTop="false"
+       android:divider="@color/Aqua"
+       android:dividerHeight="0.5dp"
+       android:listSelector="@android:color/darker_gray" >
+       
    </ListView>
+   
+   <com.androidplot.xy.XYPlot
+     android:id="@+id/signalStrength"
+     android:layout_width="fill_parent"
+     android:layout_height="150dp"
+     android:layout_marginLeft="1dp"
+     android:layout_marginRight="1dp"
+     android:layout_marginTop="10dp"
+     android:layout_below="@+id/listView1"
+     title="Графік потужності сигналу" />
+      
 </RelativeLayout>
