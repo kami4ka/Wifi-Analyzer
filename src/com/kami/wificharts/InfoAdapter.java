@@ -53,9 +53,9 @@ public class InfoAdapter extends BaseAdapter {
         int channel = Arrays.asList(channels).indexOf(mResult.frequency);
 
         ((TextView) mView.findViewById(R.id.ssid)).setText(String.valueOf(mResult.SSID));
-        ((TextView) mView.findViewById(R.id.info)).setText("Канал: " + channel);
+        ((TextView) mView.findViewById(R.id.info)).setText(ctx.getResources().getString(R.string.channel) + channel);
         ((TextView) mView.findViewById(R.id.bssid)).setText(String.valueOf(mResult.BSSID));
-        ((TextView) mView.findViewById(R.id.signal)).setText("Рівень: " + mResult.level + "dB");
+        ((TextView) mView.findViewById(R.id.signal)).setText(ctx.getResources().getString(R.string.strength) + mResult.level + "dB");
         
         return mView;
     }
