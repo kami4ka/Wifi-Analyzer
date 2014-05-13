@@ -2,6 +2,7 @@
 package com.kami.wificharts;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class MainActivity extends Activity {
     WifiScanReceiver wifiReciever;
     ListView list;
     String wifis[];
+    ArrayList<Signal> signalList;
+    int curColor = 0;
     
     static String[] ColourValues = new String[] { 
         "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", "000000", 
@@ -49,6 +52,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list = (ListView)findViewById(R.id.listView1);
+        
+        signalList = new ArrayList<Signal>();
         
         initPlots();
         setTestData();
@@ -113,6 +118,21 @@ public class MainActivity extends Activity {
         public void onReceive(Context c, Intent intent) {
             
            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
+           
+           for (ScanResult scan : wifiScanList)
+           {
+               if (signalList.contains(new Signal(scan.SSID, ColourValues[curColor]))){
+                   System.out.println("Found " + scan.SSID);
+               }
+               else
+               {
+                   signalList.add(new Signal(scan.SSID, ColourValues[curColor]));
+                   curColor++;
+               }
+           }
+           
+           System.out.println(signalList.size());
+           System.out.println("----------------");
            
            list.setAdapter(new InfoAdapter(getApplicationContext(), wifiScanList));
         

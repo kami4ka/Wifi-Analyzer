@@ -24,6 +24,13 @@ public class Signal {
         mSeries.addLast(null, level);
     }
     
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof Signal)) return false;
+        Signal obj = (Signal) o;
+        return this.mName.equals(obj.getName());
+    }
+    
     public SimpleXYSeries getSeries() {
         return mSeries;
     }
