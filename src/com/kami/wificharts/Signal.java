@@ -1,5 +1,7 @@
 package com.kami.wificharts;
 
+import android.net.wifi.ScanResult;
+
 import com.androidplot.xy.SimpleXYSeries;
 
 public class Signal {
@@ -7,13 +9,15 @@ public class Signal {
     private static final int HISTORY_SIZE = 10;
     private String mName;
     private String mColor;
+    private ScanResult mScanResult;
     private SimpleXYSeries mSeries = null;
     
-    public Signal(String name, String color) {
+    public Signal(String name, String color, ScanResult scanresult) {
         mSeries = new SimpleXYSeries(mName);
         mSeries.useImplicitXVals();
         setName(name);
         setColor(color);
+        setScanResult(scanresult);
     }
     
     public void addToSeries(int level) {
@@ -50,6 +54,14 @@ public class Signal {
     public void setColor(String mColor) {
         this.mColor = mColor;
     }
+
+	public ScanResult getScanResult() {
+		return mScanResult;
+	}
+
+	public void setScanResult(ScanResult mScanResult) {
+		this.mScanResult = mScanResult;
+	}
     
 
 }
