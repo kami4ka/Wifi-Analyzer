@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
 	private Handler mHandler;
     
     static String[] ColourValues = new String[] { 
-        "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", "000000", 
+        "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", 
         "800000", "008000", "000080", "808000", "800080", "008080", "808080", 
         "C00000", "00C000", "0000C0", "C0C000", "C000C0", "00C0C0", "C0C0C0", 
         "400000", "004000", "000040", "404000", "400040", "004040", "404040", 
