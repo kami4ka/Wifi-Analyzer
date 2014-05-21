@@ -9,6 +9,7 @@ import java.util.List;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.PointLabelFormatter;
+import com.androidplot.xy.PointLabeler;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
@@ -23,6 +24,7 @@ import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.widget.ListView;
 
@@ -31,14 +33,18 @@ public class MainActivity extends Activity {
     private XYPlot strengthPlot;
     private XYPlot timePlot;
     
+    private int mInterval = 10000; // 10 seconds by default, can be changed later
+    
     WifiManager mainWifiObj;
     WifiScanReceiver wifiReciever;
     ListView list;
     String wifis[];
     ArrayList<Signal> signalList;
     int curColor = 0;
+    private InfoAdapter mInfAd;
     
     Integer[] channels = {0, 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2482};
+	private Handler mHandler;
     
     static String[] ColourValues = new String[] { 
         "FF0000", "00FF00", "0000FF", "FFFF00", "FF00FF", "00FFFF", "000000", 
@@ -56,26 +62,54 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         list = (ListView)findViewById(R.id.listView1);
-        
+
+        mHandler = new Handler();
         signalList = new ArrayList<Signal>();
         
         initPlots();
         mainWifiObj = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         wifiReciever = new WifiScanReceiver();
         mainWifiObj.startScan();
+        
+        startRepeatingTask();
+        
+        mInfAd = new InfoAdapter(getApplicationContext(), signalList);
+        
+        list.setAdapter(mInfAd);
+        
+        
     }
 
     
     protected void onPause() {
         unregisterReceiver(wifiReciever);
+        stopRepeatingTask();
         super.onPause();
      }
 
      protected void onResume() {
         registerReceiver(wifiReciever, new IntentFilter(
         WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        startRepeatingTask();
         super.onResume();
      }
+     
+     Runnable mStatusChecker = new Runnable() {
+    	    @Override 
+    	    public void run() {
+    	      mainWifiObj.startScan(); //this function can change value of mInterval.
+    	      mHandler.postDelayed(mStatusChecker, mInterval);
+    	    }
+    	  };
+
+    	  void startRepeatingTask() {
+    	    mStatusChecker.run(); 
+    	  }
+
+    	  void stopRepeatingTask() {
+    	    mHandler.removeCallbacks(mStatusChecker);
+    	  }
+
      
     private void initPlots()
     {
@@ -85,7 +119,8 @@ public class MainActivity extends Activity {
         strengthPlot.setRangeValueFormat(new DecimalFormat("#"));
         //strengthPlot.setRangeStepValue(10);
         //strengthPlot.setTicksPerRangeLabel(7);
-        strengthPlot.setRangeBoundaries(-95, -20, BoundaryMode.FIXED);
+        
+        strengthPlot.setRangeBoundaries(-100, -20, BoundaryMode.FIXED);
         
         strengthPlot.setDomainValueFormat(new DecimalFormat("#"));
         strengthPlot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
@@ -94,62 +129,125 @@ public class MainActivity extends Activity {
         //strengthPlot.setDomainStepValue(1);
         
         timePlot = (XYPlot)findViewById(R.id.signalTime);
+        
+        timePlot.setRangeValueFormat(new DecimalFormat("#"));
+        //strengthPlot.setRangeStepValue(10);
+        //strengthPlot.setTicksPerRangeLabel(7);
+        timePlot.setRangeBoundaries(-100, -20, BoundaryMode.FIXED);
+        
+        timePlot.setDomainValueFormat(new DecimalFormat("#"));
+        timePlot.setDomainStep(XYStepMode.INCREMENT_BY_VAL, 1);
+        //strengthPlot.setTicksPerDomainLabel(15);
+        timePlot.setDomainBoundaries(0, 20, BoundaryMode.FIXED);
+        //strengthPlot.setDomainStepValue(1);
     }
         
     private void addNumbersToPlot() {
     	for (Signal signal : signalList) {
-			
-	        Number[] series1Numbers = {-96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96};
-	        series1Numbers[Arrays.asList(channels).indexOf(signal.getScanResult().frequency)] = signal.getScanResult().level;
+    		
+    		List<? extends Number> xVals =  new ArrayList<Double>();
+            List<? extends Number> yVals =  new ArrayList<Double>();
+    		
+	        //Number[] series1Numbers = {-96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96, -96};
+	        //series1Numbers[Arrays.asList(channels).indexOf(signal.getScanResult().frequency)] = signal.getScanResult().level;
 	        
 	        System.out.println(Arrays.asList(channels).indexOf(signal.getScanResult().frequency) + " " + signal.getScanResult().level);
 	        // Turn the above arrays into XYSeries':
-	        XYSeries series1 = new SimpleXYSeries(
-	                Arrays.asList(series1Numbers),          // SimpleXYSeries takes a List so turn our array into a List
-	                SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, // Y_VALS_ONLY means use the element index as the x value
-	                signal.getName());                             // Set the display title of the series
-	 
+	        
+	        SimpleXYSeries series1 = new SimpleXYSeries(xVals, yVals, signal.getName());                             // Set the display title of the series
+	        
+	        series1.addFirst(Arrays.asList(channels).indexOf(signal.getScanResult().frequency) + 2, -100);
+	        series1.addFirst(Arrays.asList(channels).indexOf(signal.getScanResult().frequency), signal.getScanResult().level);
+	        series1.addFirst(Arrays.asList(channels).indexOf(signal.getScanResult().frequency) - 2, -100);
+	        
 	        // Create a formatter to use for drawing a series using LineAndPointRenderer
 	        // and configure it from xml:
 	        LineAndPointFormatter series1Format = new SplineLineAndPointFormatter(Color.parseColor("#" + signal.getColor()),
 	        		Color.BLACK, null);
+	        
+	        series1Format.setPointLabelFormatter(new PointLabelFormatter(Color.WHITE));
+    		series1Format.setPointLabeler(new PointLabeler() {
+				
+				@Override
+				public String getLabel(XYSeries arg0, int arg1) {
+					// TODO Auto-generated method stub
+					return arg1 == 1 ? arg0.getTitle():"";
+				}
+			});
+	        
 	        //series1Format.setPointLabelFormatter(new PointLabelFormatter());
 	        //series1Format.configure(getApplicationContext(),
 	        //        R.xml.line_point_formatter_with_plf1);
 	 
 	        // add a new series' to the xyplot:
 	        strengthPlot.addSeries(series1, series1Format);
-        
     	}
+    	
         strengthPlot.redraw();
  
     }
+    
+    private void clearPlots() {
+    	strengthPlot.clear();
+    	timePlot.clear();
+    }
+    
+    private void addTimeNumbers() {
+    	
+    	for (Signal mSignal : signalList) {
+    		LineAndPointFormatter series1Format = new LineAndPointFormatter(Color.parseColor("#" + mSignal.getColor()),
+            		Color.BLACK, null, null);
+    		
+    		
+    		timePlot.addSeries(mSignal.getSeries(), series1Format);
+    	}
+    	
+    	timePlot.redraw();
+    }
      
     class WifiScanReceiver extends BroadcastReceiver {
-        public void onReceive(Context c, Intent intent) {
+
+
+		public void onReceive(Context c, Intent intent) {
             
            List<ScanResult> wifiScanList = mainWifiObj.getScanResults();
            
            for (ScanResult scan : wifiScanList)
            {
                if (signalList.contains(new Signal(scan.SSID, ColourValues[curColor], scan))){
-                   System.out.println("Found " + scan.SSID);
-               }
-               else
-               {
+            	   //signalList.get(signalList.indexOf(new Signal(scan.SSID, ColourValues[curColor], scan))).addToSeries(scan.level);
+            	   System.out.println("Found " + scan.SSID);
+               } else {
                    signalList.add(new Signal(scan.SSID, ColourValues[curColor], scan));
+                   //signalList.get(signalList.indexOf(new Signal(scan.SSID, ColourValues[curColor], scan))).addToSeries(scan.level);
                    curColor++;
                }
+               
+           }
+           
+           for (Signal sig : signalList)
+           {
+        	   sig.addToSeries(-100);
+           }
+           
+           for (ScanResult scan : wifiScanList)
+           {
+                signalList.get(signalList.indexOf(new Signal(scan.SSID))).removeLast();
+                signalList.get(signalList.indexOf(new Signal(scan.SSID))).addToSeries(scan.level);
+                signalList.get(signalList.indexOf(new Signal(scan.SSID))).setScanResult(scan);
+            
            }
            
            System.out.println(signalList.size());
            System.out.println("----------------");
            
+           clearPlots();
+
+           addTimeNumbers();
            addNumbersToPlot();
            
-           list.setAdapter(new InfoAdapter(getApplicationContext(), wifiScanList));
-        
+           
+           mInfAd.notifyDataSetChanged();
         }
      }
-
 }

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.net.wifi.ScanResult;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +16,10 @@ public class InfoAdapter extends BaseAdapter {
     
     Context ctx;
     LayoutInflater lInflater;
-    List<ScanResult> results;
+    List<Signal> results;
     Integer[] channels = {0, 2412, 2417, 2422, 2427, 2432, 2437, 2442, 2447, 2452, 2457, 2462, 2467, 2472, 2482}; 
     
-    InfoAdapter(Context context, List<ScanResult> objects) {
+    InfoAdapter(Context context, List<Signal> objects) {
         ctx = context;
         results = objects;
         lInflater = (LayoutInflater) ctx
@@ -48,14 +49,19 @@ public class InfoAdapter extends BaseAdapter {
           mView = lInflater.inflate(R.layout.list_row, parentView, false);
         }
         
-        ScanResult mResult = (ScanResult) getItem(position);
+        Signal mResult = (Signal) getItem(position);
         
-        int channel = Arrays.asList(channels).indexOf(mResult.frequency);
+        int channel = Arrays.asList(channels).indexOf(mResult.getScanResult().frequency);
+        
+        ((TextView) mView.findViewById(R.id.ssid)).setTextColor(Color.parseColor("#" + mResult.getColor()));
+        ((TextView) mView.findViewById(R.id.info)).setTextColor(Color.parseColor("#" + mResult.getColor()));
+        ((TextView) mView.findViewById(R.id.bssid)).setTextColor(Color.parseColor("#" + mResult.getColor()));
+        ((TextView) mView.findViewById(R.id.signal)).setTextColor(Color.parseColor("#" + mResult.getColor()));
 
-        ((TextView) mView.findViewById(R.id.ssid)).setText(String.valueOf(mResult.SSID));
+        ((TextView) mView.findViewById(R.id.ssid)).setText(String.valueOf(mResult.getScanResult().SSID));
         ((TextView) mView.findViewById(R.id.info)).setText(ctx.getResources().getString(R.string.channel) + channel);
-        ((TextView) mView.findViewById(R.id.bssid)).setText(String.valueOf(mResult.BSSID));
-        ((TextView) mView.findViewById(R.id.signal)).setText(ctx.getResources().getString(R.string.strength) + mResult.level + "dB");
+        ((TextView) mView.findViewById(R.id.bssid)).setText(String.valueOf(mResult.getScanResult().BSSID));
+        ((TextView) mView.findViewById(R.id.signal)).setText(ctx.getResources().getString(R.string.strength) + mResult.getScanResult().level + "dB");
         
         return mView;
     }

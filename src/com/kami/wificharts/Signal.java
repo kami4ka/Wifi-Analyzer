@@ -6,11 +6,15 @@ import com.androidplot.xy.SimpleXYSeries;
 
 public class Signal {
     
-    private static final int HISTORY_SIZE = 10;
+    private static final int HISTORY_SIZE = 20;
     private String mName;
     private String mColor;
     private ScanResult mScanResult;
     private SimpleXYSeries mSeries = null;
+    
+    public Signal (String name) {
+    	setName(name);
+    }
     
     public Signal(String name, String color, ScanResult scanresult) {
         mSeries = new SimpleXYSeries(mName);
@@ -26,6 +30,10 @@ public class Signal {
         }
         
         mSeries.addLast(null, level);
+    }
+    
+    public void removeLast() {
+    	mSeries.removeLast();
     }
     
     @Override

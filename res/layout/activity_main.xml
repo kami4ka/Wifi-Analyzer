@@ -25,6 +25,7 @@
      android:layout_margin="10dp"
      androidPlot.rangeLabel="Потужність сигналу [dBm]"
      androidPlot.domainLabel="Канали"
+     androidPlot.legendWidget.visible="false"
      androidPlot.title="Графік потужності сигналу" />
    
    <com.androidplot.xy.XYPlot
@@ -33,6 +34,7 @@
      android:layout_height="0dip"
      android:layout_weight="33"
      android:layout_margin="10dp"
+     androidPlot.legendWidget.visible="false"
      androidPlot.rangeLabel="Потужність сигналу [dBm]"
      androidPlot.title="Часовий графік потужності сигналу" />
       
