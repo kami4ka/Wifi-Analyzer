@@ -49,9 +49,28 @@ public class InfoAdapter extends BaseAdapter {
           mView = lInflater.inflate(R.layout.list_row, parentView, false);
         }
         
+       
+        
         Signal mResult = (Signal) getItem(position);
         
         int channel = Arrays.asList(channels).indexOf(mResult.getScanResult().frequency);
+        
+        String encryption;
+        
+        if(mResult.getScanResult().capabilities.contains("WPA"))
+        {
+             // We know there is WPA encryption
+            encryption = "WPA";
+        }
+        else if(mResult.getScanResult().capabilities.contains("WEP"))
+        {
+            encryption = "WEP";
+        }
+        else
+        { 
+            // Another type of security scheme, open wifi, captive portal, etc..
+            encryption = "Mixed/Open";
+        }
         
         ((TextView) mView.findViewById(R.id.ssid)).setTextColor(Color.parseColor("#" + mResult.getColor()));
         ((TextView) mView.findViewById(R.id.info)).setTextColor(Color.parseColor("#" + mResult.getColor()));
@@ -59,7 +78,7 @@ public class InfoAdapter extends BaseAdapter {
         ((TextView) mView.findViewById(R.id.signal)).setTextColor(Color.parseColor("#" + mResult.getColor()));
 
         ((TextView) mView.findViewById(R.id.ssid)).setText(String.valueOf(mResult.getScanResult().SSID));
-        ((TextView) mView.findViewById(R.id.info)).setText(ctx.getResources().getString(R.string.channel) + channel);
+        ((TextView) mView.findViewById(R.id.info)).setText(ctx.getResources().getString(R.string.channel) + channel + ", " + ctx.getResources().getString(R.string.encryption) + encryption);
         ((TextView) mView.findViewById(R.id.bssid)).setText(String.valueOf(mResult.getScanResult().BSSID));
         ((TextView) mView.findViewById(R.id.signal)).setText(ctx.getResources().getString(R.string.strength) + mResult.getScanResult().level + "dB");
         

@@ -9,7 +9,17 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="Почати аналіз"
+        android:text="Почати сканування"
         android:onClick="goCapturing" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="66dp"
+        android:text="Натисніть кнопку, щоб почати сканування"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>
